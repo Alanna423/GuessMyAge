@@ -39,8 +39,10 @@ public class Guess extends AppCompatActivity {
 
     //API call to Agify on the user inputted name and country
     public void onSubmit(View view) {
+        // textview where results of the API call will be shown
         TextView resultText = findViewById(R.id.result);
 
+        // construct API request string
         String url = "https://api.agify.io?name=";
         String name = ((EditText) findViewById(R.id.name)).getText().toString();
         String country = ((EditText) findViewById(R.id.country)).getText().toString();
@@ -53,9 +55,14 @@ public class Guess extends AppCompatActivity {
                 url += "&country_id=" + country;
         }
 
+        // Volley library for API calls in Java
         queue = Volley.newRequestQueue(this);
 
+
+        // GET request information and how to handle response; response is a String returned from the API
         StringRequest request = new StringRequest(Request.Method.GET, url, response -> {
+
+            // wonky method of finding the location of age
             int index = response.indexOf("\"age\":") + 6;
             int responseAge = 0;
             String age = "";
@@ -64,21 +71,26 @@ public class Guess extends AppCompatActivity {
                 index++;
             }
 
+            // SharedPreferences for storing the results for the history page
             SharedPreferences history = getSharedPreferences("History", MODE_PRIVATE);
             SharedPreferences.Editor editor = history.edit();
 
+            // rare names that the API can't predict for
             if (age.equals("null")) {
                 recentResult = "For the name: " + name + ". Wow, we can't predict your age at all. Your name is a rarity!";
                 resultText.setText(recentResult);
+            // all other cases
             } else {
                 responseAge = Integer.valueOf(age);
-                recentResult = "For the name: " + name + ". We think you might be " + responseAge + " years old." + response;
+                recentResult = "For the name: " + name + ". We think you might be " + responseAge + " years old.";
                 resultText.setText(recentResult);
             }
 
+            // save and apply to SharedPreferences
             editor.putString(name, recentResult);
             editor.apply();
 
+        // error trapping
         }, error -> {
             Log.i(TAG, "Error :" + error.toString());
             resultText.setText("Error logged. Did you enter a name?");

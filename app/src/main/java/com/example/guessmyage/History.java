@@ -36,6 +36,7 @@ public class History extends AppCompatActivity {
         String text = "";
 
         SharedPreferences history = getSharedPreferences("History", MODE_PRIVATE);
+        // get all name/API response pairs and append to 'text' String
         Map<String,?> names = history.getAll();
         for (Map.Entry<String, ?> entry : names.entrySet()) {
             text += (String) entry.getValue() + "\n";
@@ -48,6 +49,7 @@ public class History extends AppCompatActivity {
         }
     }
 
+    // clears SharedPreferences, clear history
     public void onClear(View view) {
         SharedPreferences history = getSharedPreferences("History", MODE_PRIVATE);
         SharedPreferences.Editor editor = history.edit();
